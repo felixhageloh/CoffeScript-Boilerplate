@@ -1,0 +1,11 @@
+{
+  "name": "coffeescript-boilerplate",
+  "description": "a coffee fuled playground",
+  "version": "0.0.1",
+  "private": false,
+  "dependencies": {
+    "watchr": "*",
+    "coffee-script": "*", 
+    "stylus": "*"
+  }
+}
