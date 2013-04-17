@@ -6,6 +6,6 @@ go in <tt>app/js</tt> and your stylus files in <tt>app/css</tt>.
 
 Start the server using
   
-  coffee server
+    coffee server
 
 It will compile your assets to <tt>public</tt> on the fly
