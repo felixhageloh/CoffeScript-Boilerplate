@@ -1,2 +1,4 @@
 $ ->
-  $('.greeting').html 'Hello World ☕'
+  greeter = require('./greeter.coffee')
+  
+  $('.greeting').html greeter.greet()

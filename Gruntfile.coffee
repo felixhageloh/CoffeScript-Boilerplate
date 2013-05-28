@@ -1,3 +1,6 @@
+coffee  = require('coffee-script');
+through = require('through');
+
 module.exports = (grunt) ->
   grunt.initConfig 
     pkg: grunt.file.readJSON('package.json')
@@ -6,10 +9,10 @@ module.exports = (grunt) ->
       src: 'app',
       dest: 'public'
     
-    coffee: 
-      compile:
-        files:
-          '<%=build.dest%>/main.js': ['<%=build.src%>/js/*.coffee']
+    # coffee: 
+    #   compile:
+    #     files:
+    #       '<%=build.dest%>/main.js': ['<%=build.src%>/js/*.coffee']
 
     stylus:
       compile:
@@ -20,9 +23,21 @@ module.exports = (grunt) ->
     watch:
       scripts:
         files: ['<%=build.src%>/js/*.coffee', "<%=build.src%>/css/*.styl"]
-        tasks: ['coffee', 'stylus']
+        tasks: ['browserify', 'stylus']
       options:
         nospawn: true
+
+    browserify:
+      '<%=build.dest%>/main.js': ['<%=build.src%>/js/*.coffee'],
+      options:
+        transform: [(file) ->
+          data  = ''
+          write = (buf) -> data += buf
+          end   = ->
+            @queue coffee.compile(data)
+            @queue null
+          through write, end
+        ]
 
     connect:
       server:
@@ -32,7 +47,7 @@ module.exports = (grunt) ->
 
 
   # load plugins
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
