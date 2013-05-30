@@ -15,12 +15,12 @@ module.exports = (grunt) ->
         options:
           compress: false
         files:
-          '<%=build.dest%>/main.css': ['<%=build.src%>/css/*.styl']
+          '<%=build.dest%>/main.css': ['<%=build.src%>/css/main.styl']
       build:
         options:
           compress: true
         files:
-          '<%=build.release%>/<%= pkg.name %>.css': ['<%=build.src%>/css/*.styl']
+          '<%=build.release%>/<%= pkg.name %>.css': ['<%=build.src%>/css/main.styl']
           
     watch:
       scripts:
