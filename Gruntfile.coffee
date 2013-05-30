@@ -8,28 +8,31 @@ module.exports = (grunt) ->
     build:
       src: 'app',
       dest: 'public'
+      release: 'release'
     
-    # coffee: 
-    #   compile:
-    #     files:
-    #       '<%=build.dest%>/main.js': ['<%=build.src%>/js/*.coffee']
-
     stylus:
       compile:
-        options: {}
+        options:
+          compress: false
         files:
           '<%=build.dest%>/main.css': ['<%=build.src%>/css/*.styl']
-
+      build:
+        options:
+          compress: true
+        files:
+          '<%=build.release%>/<%= pkg.name %>.css': ['<%=build.src%>/css/*.styl']
+          
     watch:
       scripts:
         files: ['<%=build.src%>/js/*.coffee', "<%=build.src%>/css/*.styl"]
-        tasks: ['browserify', 'stylus']
+        tasks: ['browserify', 'stylus:compile']
       options:
         nospawn: true
 
     browserify:
       '<%=build.dest%>/main.js': ['<%=build.src%>/js/*.coffee'],
       options:
+        debug: true
         transform: [(file) ->
           data  = ''
           write = (buf) -> data += buf
@@ -39,6 +42,11 @@ module.exports = (grunt) ->
           through write, end
         ]
 
+    uglify:
+      build:
+        files:
+          '<%=build.release%>/<%= pkg.name %>.js': ['<%=build.dest%>/main.js']
+
     connect:
       server:
         options: 
@@ -47,7 +55,7 @@ module.exports = (grunt) ->
 
 
   # load plugins
-  grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
@@ -55,3 +63,4 @@ module.exports = (grunt) ->
 
   # tasks
   grunt.registerTask('default', ['connect', 'watch'])
+  grunt.registerTask('build', ['browserify', 'uglify', 'stylus:build'])
