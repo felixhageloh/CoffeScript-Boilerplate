@@ -1,4 +1,4 @@
 $ ->
-  yap = require('./yap.coffee')
+  yap = require('./yap')
   
   $('.greeting').html yap.greet()

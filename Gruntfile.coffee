@@ -1,6 +1,3 @@
-coffee  = require('coffee-script');
-through = require('through');
-
 module.exports = (grunt) ->
   grunt.initConfig 
     pkg: grunt.file.readJSON('package.json')
@@ -8,6 +5,7 @@ module.exports = (grunt) ->
     build:
       src: 'app',
       dest: 'public'
+      tmp: 'tmp'
       release: 'release'
     
     stylus:
@@ -25,22 +23,23 @@ module.exports = (grunt) ->
     watch:
       scripts:
         files: ['<%=build.src%>/js/*.coffee', "<%=build.src%>/css/*.styl"]
-        tasks: ['browserify', 'stylus:compile']
+        tasks: ['compile']
       options:
         nospawn: true
 
+    coffee:
+      compile:
+        expand: true,
+        flatten: true,
+        cwd: '<%=build.src%>/js/',
+        src: ['*.coffee'],
+        dest: '<%=build.tmp%>',
+        ext: '.js'
+
     browserify:
-      '<%=build.dest%>/main.js': ['<%=build.src%>/js/*.coffee'],
+      '<%=build.dest%>/main.js': ['<%=build.tmp%>/*.js'],
       options:
         debug: true
-        transform: [(file) ->
-          data  = ''
-          write = (buf) -> data += buf
-          end   = ->
-            @queue coffee.compile(data)
-            @queue null
-          through write, end
-        ]
 
     uglify:
       build:
@@ -60,7 +59,14 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-connect'
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
 
   # tasks
-  grunt.registerTask('default', ['connect', 'watch'])
-  grunt.registerTask('build', ['browserify', 'uglify', 'stylus:build'])
+  grunt.task.registerTask 'clean', 'clears out temporary build files', ->
+    grunt.file.delete grunt.config.get('build').tmp
+
+  grunt.registerTask 'default', ['connect', 'watch']
+  grunt.registerTask 'compile', ['clean', 'coffee', 'browserify', 'stylus:compile']
+  grunt.registerTask 'build', ['clean', 'coffee', 'browserify', 'uglify', 'stylus:build']
+
+  grunt.task.run ['compile']
