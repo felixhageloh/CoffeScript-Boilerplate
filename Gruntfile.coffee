@@ -35,11 +35,21 @@ module.exports = (grunt) ->
         src: ['*.coffee'],
         dest: '<%=build.tmp%>',
         ext: '.js'
+      specs:
+        files: 
+          'spec/<%=pkg.name%>_spec.js': ['spec/*.coffee']
 
     browserify:
-      '<%=build.dest%>/main.js': ['<%=build.tmp%>/*.js'],
-      options:
-        debug: true
+      main:
+        src: ['<%=build.tmp%>/*.js']
+        dest: '<%=build.dest%>/main.js'
+        options:
+          debug: true
+      specs:
+        src: ['spec/<%=pkg.name%>_spec.js']
+        dest: 'spec/<%=pkg.name%>_spec.js'
+        options:
+          debug: true
 
     uglify:
       build:
@@ -51,6 +61,11 @@ module.exports = (grunt) ->
         options: 
           base: 'public'
 
+    jasmine:
+      src: '<%=build.dest%>/js/*.js',
+      options:
+        specs: 'spec/*_spec.js'
+        helpers: 'spec/helpers/*.coffee'
 
 
   # load plugins
@@ -60,13 +75,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-connect'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-jasmine'
 
   # tasks
   grunt.task.registerTask 'clean', 'clears out temporary build files', ->
     grunt.file.delete grunt.config.get('build').tmp
 
-  grunt.registerTask 'default', ['connect', 'watch']
-  grunt.registerTask 'compile', ['clean', 'coffee', 'browserify', 'stylus:compile']
-  grunt.registerTask 'build', ['clean', 'coffee', 'browserify', 'uglify', 'stylus:build']
-
-  grunt.task.run ['compile']
+  grunt.registerTask 'default', ['compile', 'connect', 'watch']
+  grunt.registerTask 'compile', ['clean', 'coffee:compile', 'browserify:main', 'stylus:compile']
+  grunt.registerTask 'build', ['clean', 'coffee:compile', 'browserify:main', 'uglify', 'stylus:build']
+  grunt.registerTask 'spec', ['compile', 'coffee:specs', 'browserify:specs', 'jasmine']
