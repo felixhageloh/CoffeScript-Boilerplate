@@ -8,7 +8,11 @@ First install the <tt>grunt cli</tt>, if you don't have it already (check here f
 	npm install -g grunt-cli
 
 
-then, start the server using
+then install all other dependencies using
+  
+  npm install
+
+Now you can start developing by running
   
     grunt
 
