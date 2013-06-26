@@ -10,11 +10,11 @@ First install the <tt>grunt cli</tt>, if you don't have it already (check here f
 
 then install all other dependencies using
   
-  npm install
+	npm install
 
 Now you can start developing by running
   
-    grunt
+	grunt
 
 It will compile your assets to <tt>public</tt> on the fly. By default, only <tt>main.coffee</tt> and <tt>main.styl</tt> will be compiled. 
 
